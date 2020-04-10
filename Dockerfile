@@ -1,12 +1,12 @@
 FROM golang:latest
 
-ENV GO111MODULE=on
-ENV GOFLAGS=-mod=vendor
+WORKDIR /app/
 
-WORKDIR /app
+ADD . /go/src/github.com/bethanyj28/gomato
 
-ENV SRC_DIR=/go/src/github.com/bethanyj28/gomato
-ADD . $SRC_DIR
-RUN cd $SRC_DIR; go build -o gomato cmd/server/main.go; cp gomato /app/; cp environment.env /app/
+RUN go build -o gomato /go/src/github.com/bethanyj28/gomato/cmd/server/main.go
+RUN cp /go/src/github.com/bethanyj28/gomato/environment.env .
 
 ENTRYPOINT ["./gomato"]
+
+EXPOSE 8080
