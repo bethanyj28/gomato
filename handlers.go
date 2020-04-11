@@ -30,7 +30,7 @@ func (s *Server) startTimer(c *gin.Context) {
 
 	ud := sc.Text
 	if ud == "" {
-		ud = "1"
+		ud = "20"
 	}
 
 	ud = fmt.Sprintf("%sm", ud)
