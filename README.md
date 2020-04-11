@@ -3,7 +3,7 @@ An open source slack pomodoro timer written in Go. This project is currently in 
 
 ## Getting Started
 
-On slack, create a bot user. Under **Settings** -> **Basic Information**, scroll to **App Credentials** and copy the **Verification Token** (TODO: update authentication)
+On slack, create a bot user. Under **Settings** &#8594; **Basic Information**, scroll to **App Credentials** and copy the **Verification Token**
 
 Clone the repo, create a file called `environment.env`. To this file add the following:
 
@@ -24,7 +24,7 @@ Install ngrok and run
 ngrok http 8080
 ```
 
-Copy the forwarding URL (the http one). On the Slack API homepage for your app, under **Features** -> **Slash Commands**, add the following commands mapped to the following endpoints (command names are suggestions):
+Copy the forwarding URL (the http one). On the Slack API homepage for your app, under **Features** &#8594; **Slash Commands**, add the following commands mapped to the following endpoints (command names are suggestions):
 
 ```
 /gomato_start -> <ngrok url>/timer/start (optional set duration)
@@ -43,4 +43,5 @@ From here, you should be able to run those commands from your workspace! The com
 ## Upcoming Tasks
 - [ ] Respond to user via Slack when timer is up
 - [ ] Option to set do not disturb during timer
+- [ ] Update authentication since verification token is depreciated
 - [ ] Set a timer for a break
