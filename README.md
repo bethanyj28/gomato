@@ -41,6 +41,6 @@ From here, you should be able to run those commands from your workspace! The com
 ```
 
 ## Upcoming Tasks
-- [] Respond to user via Slack when timer is up
-- [] Option to set do not disturb during timer
-- [] Set a timer for a break
+- [ ] Respond to user via Slack when timer is up
+- [ ] Option to set do not disturb during timer
+- [ ] Set a timer for a break
