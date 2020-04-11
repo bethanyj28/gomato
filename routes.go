@@ -19,18 +19,12 @@ func NewServer() *Server {
 }
 
 // BuildRoutes builds the routes to listen to slash commands
-func (s *Server) BuildRoutes(router *gin.Engine) {
-	timer := router.Group("/timer")
+func (s *Server) BuildRoutes() {
+	timer := s.Router.Group("/timer")
 	{
-		timer.POST("/start", s.startTimer)
-		timer.POST("/pause", s.pauseTimer)
-		timer.POST("/stop", s.stopTimer)
-	}
-
-	pomBreak := router.Group("/break")
-	{
-		pomBreak.POST("/start", s.startBreak)
-		pomBreak.POST("/pause", s.pauseBreak)
-		pomBreak.POST("/stop", s.stopBreak)
+		timer.POST("start", s.startTimer)
+		timer.POST("pause", s.pauseTimer)
+		timer.POST("resume", s.resumeTimer)
+		timer.POST("stop", s.stopTimer)
 	}
 }
