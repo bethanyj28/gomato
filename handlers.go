@@ -1,5 +1,7 @@
 package gomato
 
+/*
+
 import (
 	"fmt"
 	"net/http"
@@ -151,3 +153,4 @@ func (s *Server) setTimer(userID string) func() {
 		s.notifyUser(userID)
 	}
 }
+*/
