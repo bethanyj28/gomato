@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	gcache "github.com/patrickmn/go-cache"
@@ -74,6 +75,81 @@ func (t *TimeKeeper) Start(uID string, start time.Time, duration int32, actions 
 	t.cache.SetDefault(uID, &p)
 
 	return uID, nil
+}
+
+// Pause pauses a timer with the given user ID
+func (t *TimeKeeper) Pause(uID string) error {
+	if uID == strings.TrimSpace(uID) {
+		t.logger.Print("[ERROR] No user ID provided")
+		return errors.New("no user ID provided")
+	}
+
+	pd, ok := t.cache.Get(uID)
+	if !ok {
+		t.logger.Print("[INFO] No timer associated with given user")
+		return errors.New("no timer associated with given user")
+	}
+
+	pomData, ok := pd.(*pomodoro)
+	if !ok {
+		t.logger.Print("[ERROR] Error parsing pomodoro data")
+		return errors.New("failed to cast cached data as pomodoro")
+	}
+
+	_ = pomData.timer.Stop()
+	pomData.currentDuration = pomData.currentDuration - time.Since(pomData.startTime)
+
+	return nil
+}
+
+// Resume resumes a paused timer with the given user ID
+func (t *TimeKeeper) Resume(uID string) error {
+	if uID == strings.TrimSpace(uID) {
+		t.logger.Print("[ERROR] No user ID provided")
+		return errors.New("no user ID provided")
+	}
+
+	pd, ok := t.cache.Get(uID)
+	if !ok {
+		t.logger.Print("[INFO] No timer associated with given user")
+		return errors.New("no timer associated with given user")
+	}
+
+	pomData, ok := pd.(*pomodoro)
+	if !ok {
+		t.logger.Print("[ERROR] Error parsing pomodoro data")
+		return errors.New("failed to cast cached data as pomodoro")
+	}
+
+	_ = pomData.timer.Reset(pomData.currentDuration)
+
+	return nil
+}
+
+// Stop stops a timer (running or paused) and deletes it from the cache
+func (t *TimeKeeper) Stop(uID string) error {
+	if uID == strings.TrimSpace(uID) {
+		t.logger.Print("[ERROR] No user ID provided")
+		return errors.New("no user ID provided")
+	}
+
+	pd, ok := t.cache.Get(uID)
+	if !ok {
+		t.logger.Print("[INFO] No timer associated with given user")
+		return errors.New("no timer associated with given user")
+	}
+
+	pomData, ok := pd.(*pomodoro)
+	if !ok {
+		t.logger.Print("[ERROR] Error parsing pomodoro data")
+		return errors.New("failed to cast cached data as pomodoro")
+	}
+
+	_ = pomData.timer.Stop()
+
+	t.cache.Delete(uID)
+
+	return nil
 }
 
 func (t *TimeKeeper) runActions(userID string, actions ...func()) func() {
