@@ -1,7 +1,6 @@
 package gomato
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,6 +11,13 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/xid"
 )
+
+// PomodoroManager represents the methods necessary to implement gomato for easy testing
+type PomodoroManager interface {
+	Start(uID string, start time.Time, duration string, actions ...func()) (string, error)
+	Resume(uID string) error
+	Stop(uID string) error
+}
 
 // TimeKeeper represents the necessary components to manage pomodoros
 type TimeKeeper struct {
@@ -44,7 +50,7 @@ type pomodoro struct {
 
 // Start begins a new pomodoro
 // A user identifier should be passed through, but if it is not then it will be generated and returned
-func (t *TimeKeeper) Start(uID string, start time.Time, duration int32, actions ...func()) (string, error) {
+func (t *TimeKeeper) Start(uID string, start time.Time, duration string, actions ...func()) (string, error) {
 	if uID == "" {
 		t.logger.Print("[INFO] User ID not provided, setting ID")
 		uID = xid.New().String()
@@ -55,15 +61,10 @@ func (t *TimeKeeper) Start(uID string, start time.Time, duration int32, actions 
 		start = time.Now()
 	}
 
-	if duration == 0 {
-		t.logger.Print("[INFO] Duration not set, setting to 20 minutes")
-		duration = 20
-	}
-
-	fDur, err := time.ParseDuration(fmt.Sprintf("%dm", duration))
+	fDur, err := time.ParseDuration(duration)
 	if err != nil {
-		t.logger.Printf("[ERROR] %s", err.Error())
-		return "", errors.Wrap(err, "failed to parse duration")
+		t.logger.Printf("[ERROR] failed to parse duration: %s\nSetting to default of 25 minutes...", err.Error())
+		fDur = 25 * time.Minute
 	}
 
 	p := pomodoro{

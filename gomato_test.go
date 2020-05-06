@@ -28,12 +28,12 @@ func TestStart(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c, tk := setUpTest()
 			var finished bool
-			_, err := tk.Start(tt.userID, tt.startTime, 1, timerFinished(&finished))
+			_, err := tk.Start(tt.userID, tt.startTime, "15s", timerFinished(&finished))
 			if !tt.expectErr && err != nil {
 				t.Fatalf("an unexpected error occurred: %s", err.Error())
 			}
 
-			time.Sleep(65 * time.Second)
+			time.Sleep(25 * time.Second)
 
 			if !finished {
 				t.Fatal("final actions not run")
