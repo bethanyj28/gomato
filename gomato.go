@@ -14,8 +14,10 @@ import (
 
 // PomodoroManager represents the methods necessary to implement gomato for easy testing
 type PomodoroManager interface {
-	Start(uID string, start time.Time, duration time.Duration, actions ...func()) (string, error)
+	StartWithTime(uID string, start time.Time, duration time.Duration, actions ...func()) (string, error)
+	Start(uID string, duration time.Duration, actions ...func()) (string, error)
 	Resume(uID string) error
+	Pause(uID string) error
 	Stop(uID string) error
 }
 
@@ -48,9 +50,9 @@ type pomodoro struct {
 	timer           *time.Timer
 }
 
-// Start begins a new pomodoro
+// StartWithTime begins a new pomodoro
 // A user identifier should be passed through, but if it is not then it will be generated and returned
-func (t *TimeKeeper) Start(uID string, start time.Time, duration time.Duration, actions ...func()) (string, error) {
+func (t *TimeKeeper) StartWithTime(uID string, start time.Time, duration time.Duration, actions ...func()) (string, error) {
 	if uID == "" {
 		t.logger.Print("[INFO] User ID not provided, setting ID")
 		uID = xid.New().String()
@@ -60,6 +62,31 @@ func (t *TimeKeeper) Start(uID string, start time.Time, duration time.Duration, 
 		t.logger.Print("[INFO] Time is zero, setting to current time")
 		start = time.Now()
 	}
+
+	if duration.String() == "0s" { // zero duration
+		duration = 25 * time.Minute
+	}
+
+	p := pomodoro{
+		startTime:       start,
+		currentDuration: duration,
+		timer:           time.AfterFunc(duration, t.runActions(uID, actions...)),
+	}
+
+	t.cache.SetDefault(uID, &p)
+
+	return uID, nil
+}
+
+// Start begins a new pomodoro without the need to pass in a start time
+// A user identifier should be passed through, but if it is not then it will be generated and returned
+func (t *TimeKeeper) Start(uID string, duration time.Duration, actions ...func()) (string, error) {
+	if uID == "" {
+		t.logger.Print("[INFO] User ID not provided, setting ID")
+		uID = xid.New().String()
+	}
+
+	start := time.Now()
 
 	if duration.String() == "0s" { // zero duration
 		duration = 25 * time.Minute

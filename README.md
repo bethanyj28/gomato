@@ -1,47 +1,56 @@
 # gomato
-An open source slack pomodoro timer written in Go. This project is currently in development and is about halfway to a usable product. Please see [upcoming tasks](#upcoming-tasks)
+An open source pomodoro library written in Go. 
 
 ## Getting Started
 
-On slack, create a bot user. Under **Settings** &#8594; **Basic Information**, scroll to **App Credentials** and copy the **Verification Token**
+You can initialize a timer in one of two ways:
 
-Clone the repo, create a file called `environment.env`. To this file add the following:
+1. Using default settings
 
-```
-SLACK_VERIFICATION_TOKEN=<Your Slack verification token>
-```
-
-Run the server by running 
+Default settings use the standard library log package and a cache with no expiration or cleanup.
 
 ```
-docker build -t bethanyj28/gomato .
-docker run --rm -p 8080:8080 bethanyj28/gomato
+pomodoro := gomato.NewDefaultTimeKeeper()
 ```
 
-Install ngrok and run 
+2. Using custom settings
+
+You can use your own standard log implementation and cache with custom cleanup. If you leave the cache `nil`, then it will create a cache with no expiration or cleanup. If you leave the logger `nil`, it will use a no-op logger.
 
 ```
-ngrok http 8080
+import (
+        "log"
+        "time"
+
+        gcache "github.com/patrickmn/go-cache"
+        "github.com/bethanyj28/gomato"
+)
+
+logger := log.New(os.Stdout, "GOMATO: ", log.Lshortfile)
+cache := gcache.New(5 * time.Minute, 5 * time.Minute)
+
+pomodoro := gomato.NewTimeKeeper(logger, cache)
 ```
 
-Copy the forwarding URL (the http one). On the Slack API homepage for your app, under **Features** &#8594; **Slash Commands**, add the following commands mapped to the following endpoints (command names are suggestions):
+Starting a timer is simple:
+```
+pomodoro := gomato.NewDefaultTimeKeeper()
+uID, err := pomodoro.Start("userID", 25 * time.Minute, action1(), action2())
+```
+The `userID` is optional. If you opt to not use your own, then one will be generated and returned. With `StartWithTime` you can optionally provide a starting time if it is not whatever `time.Now()` returns. If you enter a zero duration, it will be set to the typical 25 minutes that pomodoros are set. Actions are variadic, so you can enter as many or as few as you'd like, just make sure that there's nothing passed into them and they do not return anything. Feel free to look at the tests for an example on how to still pass in variables to the functions.
+
+Pausing, Resuming, and Stopping simply require a userID.
+
+## Testing
+
+For simple testing, this package abides by the following interface: 
 
 ```
-/gomato_start -> <ngrok url>/timer/start (optional set duration)
-/gomato_pause -> <ngrok url>/timer/pause
-/gomato_resume -> <ngrok url>/timer/resume
-/gomato_stop -> <ngrok url>/timer/stop
+type PomodoroManager interface {
+	StartWithTime(uID string, start time.Time, duration time.Duration, actions ...func()) (string, error)
+	Start(uID string, duration time.Duration, actions ...func()) (string, error)
+	Pause(uID string) error
+	Resume(uID string) error
+	Stop(uID string) error
+}
 ```
-
-From here, you should be able to run those commands from your workspace! The commands are straightforward except for start, which has the option to set a duration. The default duration is 20 minutes
-
-```
-/gomato_start
-/gomato_start 40
-```
-
-## Upcoming Tasks
-- [ ] Respond to user via Slack when timer is up
-- [ ] Option to set do not disturb during timer
-- [ ] Update authentication since verification token is depreciated
-- [ ] Set a timer for a break

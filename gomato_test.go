@@ -33,7 +33,7 @@ func TestStart(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c, tk := setUpTest()
 			var finished bool
-			_, err := tk.Start(tt.userID, tt.startTime, 2*time.Second, timerFinished(&finished))
+			_, err := tk.StartWithTime(tt.userID, tt.startTime, 2*time.Second, timerFinished(&finished))
 			if !tt.expectErr && err != nil {
 				t.Fatalf("an unexpected error occurred: %s", err.Error())
 			}
@@ -63,7 +63,7 @@ func TestPause(t *testing.T) {
 			expectErr: false,
 			userID:    "testUser",
 			setUp: func(id string, finished *bool, tk *TimeKeeper) {
-				if _, err := tk.Start(id, time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
+				if _, err := tk.StartWithTime(id, time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
 					t.Fatalf("an unexpected error occurred: %s", err.Error())
 				}
 			},
@@ -79,7 +79,7 @@ func TestPause(t *testing.T) {
 			expectErr: true,
 			userID:    "ID_DNE",
 			setUp: func(id string, finished *bool, tk *TimeKeeper) {
-				if _, err := tk.Start("testID", time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
+				if _, err := tk.StartWithTime("testID", time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
 					t.Fatalf("an unexpected error occurred: %s", err.Error())
 				}
 
@@ -132,7 +132,7 @@ func TestResume(t *testing.T) {
 			expectErr: false,
 			userID:    "testUser",
 			setUp: func(id string, finished *bool, tk *TimeKeeper) {
-				if _, err := tk.Start(id, time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
+				if _, err := tk.StartWithTime(id, time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
 					t.Fatalf("an unexpected error occurred: %s", err.Error())
 				}
 
@@ -152,7 +152,7 @@ func TestResume(t *testing.T) {
 			expectErr: true,
 			userID:    "ID_DNE",
 			setUp: func(id string, finished *bool, tk *TimeKeeper) {
-				if _, err := tk.Start("testID", time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
+				if _, err := tk.StartWithTime("testID", time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
 					t.Fatalf("an unexpected error occurred: %s", err.Error())
 				}
 
@@ -209,7 +209,7 @@ func TestStop(t *testing.T) {
 			expectErr: false,
 			userID:    "testUser",
 			setUp: func(id string, finished *bool, tk *TimeKeeper) {
-				if _, err := tk.Start(id, time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
+				if _, err := tk.StartWithTime(id, time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
 					t.Fatalf("an unexpected error occurred: %s", err.Error())
 				}
 			},
@@ -225,7 +225,7 @@ func TestStop(t *testing.T) {
 			expectErr: true,
 			userID:    "ID_DNE",
 			setUp: func(id string, finished *bool, tk *TimeKeeper) {
-				if _, err := tk.Start("testID", time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
+				if _, err := tk.StartWithTime("testID", time.Now(), 2*time.Second, timerFinished(finished)); err != nil {
 					t.Fatalf("an unexpected error occurred: %s", err.Error())
 				}
 
