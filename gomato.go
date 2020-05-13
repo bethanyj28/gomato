@@ -78,7 +78,7 @@ func (t *TimeKeeper) Start(uID string, start time.Time, duration time.Duration, 
 
 // Pause pauses a timer with the given user ID
 func (t *TimeKeeper) Pause(uID string) error {
-	if uID == "" {
+	if strings.TrimSpace(uID) == "" {
 		t.logger.Print("[ERROR] No user ID provided")
 		return errors.New("no user ID provided")
 	}
@@ -103,7 +103,7 @@ func (t *TimeKeeper) Pause(uID string) error {
 
 // Resume resumes a paused timer with the given user ID
 func (t *TimeKeeper) Resume(uID string) error {
-	if uID == strings.TrimSpace(uID) {
+	if strings.TrimSpace(uID) == "" {
 		t.logger.Print("[ERROR] No user ID provided")
 		return errors.New("no user ID provided")
 	}
@@ -127,7 +127,7 @@ func (t *TimeKeeper) Resume(uID string) error {
 
 // Stop stops a timer (running or paused) and deletes it from the cache
 func (t *TimeKeeper) Stop(uID string) error {
-	if uID == strings.TrimSpace(uID) {
+	if strings.TrimSpace(uID) == "" {
 		t.logger.Print("[ERROR] No user ID provided")
 		return errors.New("no user ID provided")
 	}
