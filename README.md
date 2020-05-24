@@ -54,3 +54,7 @@ type PomodoroManager interface {
 	Stop(uID string) error
 }
 ```
+
+## Planned use cases
+- [ ] [Slack App](https://github.com/bethanyj28/gomato-slack)
+- [ ] CLI
