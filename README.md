@@ -1,5 +1,5 @@
 # gomato
-An open source pomodoro library written in Go. 
+A pomodoro library written in Go. 
 
 ## Getting Started
 
